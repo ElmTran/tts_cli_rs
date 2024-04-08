@@ -1,6 +1,7 @@
 // use clap::{Arg, ArgAction, Command};
 use dotenv::dotenv;
-use tts_cli_rs::tts::azure;
+mod tts;
+use tts::azure;
 
 #[tokio::main]
 async fn main() {
