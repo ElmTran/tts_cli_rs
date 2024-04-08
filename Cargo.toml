@@ -1,0 +1,10 @@
+[package]
+name = "tts_cli_rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = "4.5.4"
+reqwest = "0.12.3"
+dotenv = "0.15.0"
+tokio = { version = "1", features = ["full"] }
