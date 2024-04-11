@@ -14,15 +14,10 @@ pub async fn speak(params: &Params) -> Result<Vec<u8>, Box<dyn Error>> {
         .post(url)
         .header("Ocp-Apim-Subscription-Key", subscription)
         .header("Content-Type", "application/ssml+xml")
-        .header(
-            "X-Microsoft-OutputFormat",
-            "audio-24khz-160kbitrate-mono-mp3",
-        )
+        .header("X-Microsoft-OutputFormat", "audio-24khz-160kbitrate-mono-mp3")
         .header("User-Agent", "curl")
         .body(xml)
-        .send()
-        .await?
-        .bytes()
-        .await?;
+        .send().await?
+        .bytes().await?;
     Ok(res.to_vec())
 }

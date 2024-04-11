@@ -19,17 +19,14 @@ async fn main() {
                 speak_matches.get_one::<String>("language").unwrap().clone(),
                 speak_matches.get_one::<String>("style").unwrap().clone(),
                 speak_matches.get_one::<String>("rate").unwrap().clone(),
-                speak_matches.get_one::<String>("pitch").unwrap().clone(),
+                speak_matches.get_one::<String>("pitch").unwrap().clone()
             );
             let res = azure::speak(&params).await.unwrap();
             if speak_matches.contains_id("output") {
-                let path = speak_matches
-                    .get_one::<String>("output")
-                    .unwrap()
-                    .to_string();
+                let path = speak_matches.get_one::<String>("output").unwrap().to_string();
                 audio_util::save_audio(&res, &path).unwrap();
             }
-            audio_util::play_audio(res).await.unwrap();
+            audio_util::play_audio(&res).await.unwrap();
         }
         _ => {
             println!("Invalid command");

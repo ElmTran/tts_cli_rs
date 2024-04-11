@@ -1,7 +1,9 @@
 use super::time_util;
-use rodio::{source::Source, Decoder, OutputStream};
 use std::fs::File;
-use std::io::{Cursor, Write};
+use std::io::Write;
+use std::thread;
+use std::time::Duration;
+use soloud::{ audio, AudioExt, LoadExt, Soloud };
 
 pub fn save_audio(audio: &[u8], path: &String) -> std::io::Result<()> {
     let mut file = File::create(format!("{}/{}.mp3", path, time_util::get_timestamp()))?;
@@ -9,13 +11,13 @@ pub fn save_audio(audio: &[u8], path: &String) -> std::io::Result<()> {
     Ok(())
 }
 
-pub async fn play_audio(audio: Vec<u8>) -> Result<(), Box<dyn std::error::Error>> {
-    let cursor = Cursor::new(audio);
-    let decoder = Decoder::new(cursor).unwrap();
-    let (_stream, stream_handle) = OutputStream::try_default().unwrap();
-    let err = stream_handle.play_raw(decoder.convert_samples());
-    match err {
-        Ok(_) => Ok(()),
-        Err(e) => Err(Box::new(e)),
+pub async fn play_audio(audio: &[u8]) -> Result<(), Box<dyn std::error::Error>> {
+    let sl = Soloud::default()?;
+    let mut wav = audio::Wav::default();
+    wav.load_mem(audio)?;
+    sl.play(&wav);
+    while sl.voice_count() > 0 {
+        thread::sleep(Duration::from_millis(100));
     }
+    Ok(())
 }
