@@ -3,8 +3,8 @@ use rodio::{source::Source, Decoder, OutputStream};
 use std::fs::File;
 use std::io::{Cursor, Write};
 
-pub fn save_audio(audio: Vec<u8>) -> std::io::Result<()> {
-    let mut file = File::create(format!("assets/audio/{}.wav", time_util::get_timestamp()))?;
+pub fn save_audio(audio: &[u8], path: &String) -> std::io::Result<()> {
+    let mut file = File::create(format!("{}/{}.mp3", path, time_util::get_timestamp()))?;
     file.write_all(&audio)?;
     Ok(())
 }

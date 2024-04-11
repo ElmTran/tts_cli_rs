@@ -69,6 +69,15 @@ pub fn get_args() -> ArgMatches {
                         .num_args(1..)
                         .default_value("0%")
                         .help("Pitch to speak"),
+                )
+                .arg(
+                    Arg::new("output")
+                        .short('o')
+                        .long("output")
+                        .help("Output file")
+                        .action(ArgAction::Set)
+                        .required(false)
+                        .help("Output file"),
                 ),
         )
         .get_matches();
