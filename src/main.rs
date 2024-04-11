@@ -22,7 +22,7 @@ async fn main() {
                 speak_matches.get_one::<String>("pitch").unwrap().clone(),
             );
             let res = azure::speak(&params).await.unwrap();
-            audio_util::play_audio(res).await.unwrap();
+            audio_util::save_audio(res).unwrap();
         }
         _ => {
             println!("Invalid command");
