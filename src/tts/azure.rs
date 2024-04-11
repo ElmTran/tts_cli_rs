@@ -3,7 +3,7 @@ use reqwest::Client;
 use std::env;
 use std::error::Error;
 
-pub async fn request(params: &Params) -> Result<Vec<u8>, Box<dyn Error>> {
+pub async fn speak(params: &Params) -> Result<Vec<u8>, Box<dyn Error>> {
     let subscription = env::var("AZURE_KEY").expect("AZURE_KEY must be set");
     let region = env::var("AZURE_REGION").expect("AZURE_REGION must be set");
     let endpoint = env::var("AZURE_ENDPOINT").expect("AZURE_ENDPOINT must be set");
