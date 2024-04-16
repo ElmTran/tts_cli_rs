@@ -1,5 +1,5 @@
 use super::time_util;
-use soloud::{audio, AudioExt, LoadExt, Soloud};
+use soloud::{ audio, AudioExt, LoadExt, Soloud };
 use std::fs::File;
 use std::io::Write;
 use std::thread;

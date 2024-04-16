@@ -14,7 +14,7 @@ impl Params {
         language: String,
         style: String,
         rate: String,
-        pitch: String,
+        pitch: String
     ) -> Self {
         Self {
             text,
@@ -44,7 +44,12 @@ impl Params {
                 </voice>
             </speak>
         "#,
-            self.language, self.speaker, self.style, self.rate, self.pitch, self.text
+            self.language,
+            self.speaker,
+            self.style,
+            self.rate,
+            self.pitch,
+            self.text
         )
     }
 }

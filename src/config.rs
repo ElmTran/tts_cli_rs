@@ -10,14 +10,7 @@ pub struct Config {
 impl Config {
     pub fn from_toml(path: &str) -> Self {
         if !std::path::Path::new("conf.toml").exists() {
-            let toml = toml
-                ::to_string(
-                    &(Config {
-                        key: None,
-                        endpoint: None,
-                    })
-                )
-                .unwrap();
+            let toml = toml::to_string(&(Config { key: None, endpoint: None })).unwrap();
             fs::write("conf.toml", toml).expect("Error writing file");
         }
         let toml = fs::read_to_string(path).expect("Error reading file");
