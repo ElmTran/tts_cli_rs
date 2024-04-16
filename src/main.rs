@@ -1,35 +1,44 @@
 mod args;
+mod config;
 mod tts;
 mod utils;
 
-use dotenv::dotenv;
+use args::Opt;
+use structopt::StructOpt;
 use tts::azure;
 use tts::param;
 use utils::audio_util;
 
 #[tokio::main]
 async fn main() {
-    dotenv().ok();
-    let args = args::get_args();
-    match args.subcommand() {
-        Some(("speak", speak_matches)) => {
-            let params = param::Params::new(
-                speak_matches.get_one::<String>("text").unwrap().clone(),
-                speak_matches.get_one::<String>("speaker").unwrap().clone(),
-                speak_matches.get_one::<String>("language").unwrap().clone(),
-                speak_matches.get_one::<String>("style").unwrap().clone(),
-                speak_matches.get_one::<String>("rate").unwrap().clone(),
-                speak_matches.get_one::<String>("pitch").unwrap().clone()
-            );
-            let res = azure::speak(&params).await.unwrap();
-            if speak_matches.contains_id("output") {
-                let path = speak_matches.get_one::<String>("output").unwrap().to_string();
-                audio_util::save_audio(&res, &path).unwrap();
+    let matches = Opt::from_args();
+    if let Some(command) = matches.command {
+        match command {
+            args::Command::Config(config) => {
+                if let Some(set) = config.set {
+                    let mut config_new = config::Config::new();
+                    config_new.set_config(&set);
+                } else if let Some(query) = config.get {
+                    let config_new = config::Config::new();
+                    config_new.get_config(query);
+                }
             }
-            audio_util::play_audio(&res).await.unwrap();
         }
-        _ => {
-            println!("Invalid command");
+    } else {
+        let params = param::Params::new(
+            matches
+                .text
+                .unwrap_or("please provide text to speak".to_string()),
+            matches.speaker,
+            matches.language,
+            matches.style,
+            matches.rate,
+            matches.pitch,
+        );
+        let res = azure::speak(&params).await.unwrap();
+        if let Some(output) = matches.output {
+            audio_util::save_audio(&res, &output).unwrap();
         }
+        audio_util::play_audio(&res).await.unwrap();
     }
 }

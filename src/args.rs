@@ -1,85 +1,52 @@
-use clap::{Arg, ArgAction, ArgMatches, Command};
+use std::error::Error;
+use structopt::StructOpt;
 
-pub fn get_args() -> ArgMatches {
-    let matches = Command::new("tts-cli")
-        .about("Text to speech command line interface")
-        .version("0.0.1")
-        .subcommand_required(true)
-        .arg_required_else_help(true)
-        .subcommand(
-            Command::new("speak")
-                .short_flag('S')
-                .long_flag("speak")
-                .about("Speak text")
-                .arg(
-                    Arg::new("text")
-                        .short('t')
-                        .long("text")
-                        .help("Text to speak")
-                        .action(ArgAction::Set)
-                        .num_args(1..)
-                        .help("Text to speak"),
-                )
-                .arg(
-                    Arg::new("language")
-                        .short('l')
-                        .long("language")
-                        .help("Language to speak")
-                        .action(ArgAction::Set)
-                        .num_args(1..)
-                        .default_value("en-US")
-                        .help("Language to speak"),
-                )
-                .arg(
-                    Arg::new("style")
-                        .short('y')
-                        .long("style")
-                        .help("Style to speak")
-                        .action(ArgAction::Set)
-                        .num_args(1..)
-                        .default_value("chat")
-                        .help("Style to speak"),
-                )
-                .arg(
-                    Arg::new("speaker")
-                        .short('s')
-                        .long("speaker")
-                        .help("Speaker to speak")
-                        .action(ArgAction::Set)
-                        .num_args(1..)
-                        .default_value("en-US-AriaNeural")
-                        .help("Speaker to speak"),
-                )
-                .arg(
-                    Arg::new("rate")
-                        .short('r')
-                        .long("rate")
-                        .help("Rate to speak")
-                        .action(ArgAction::Set)
-                        .num_args(1..)
-                        .default_value("0%")
-                        .help("Rate to speak"),
-                )
-                .arg(
-                    Arg::new("pitch")
-                        .short('p')
-                        .long("pitch")
-                        .help("Pitch to speak")
-                        .action(ArgAction::Set)
-                        .num_args(1..)
-                        .default_value("0%")
-                        .help("Pitch to speak"),
-                )
-                .arg(
-                    Arg::new("output")
-                        .short('o')
-                        .long("output")
-                        .help("Output file")
-                        .action(ArgAction::Set)
-                        .required(false)
-                        .help("Output file"),
-                ),
-        )
-        .get_matches();
-    matches
+#[derive(StructOpt, Debug)]
+#[structopt(name = "tts_cli_rs")]
+pub struct Opt {
+    #[structopt(short, long, help = "Text to speak")]
+    pub text: Option<String>,
+    #[structopt(short, long, help = "Language to speak", default_value = "en-US")]
+    pub language: String,
+    #[structopt(short = "y", long, help = "Style to speak", default_value = "chat")]
+    pub style: String,
+    #[structopt(
+        short,
+        long,
+        help = "Speaker to speak",
+        default_value = "en-US-AriaNeural"
+    )]
+    pub speaker: String,
+    #[structopt(short, long, help = "Rate to speak", default_value = "0%")]
+    pub rate: String,
+    #[structopt(short, long, help = "Pitch to speak", default_value = "0%")]
+    pub pitch: String,
+    /// Output file
+    pub output: Option<String>,
+    #[structopt(subcommand)]
+    pub command: Option<Command>,
+}
+
+#[derive(StructOpt, Debug)]
+pub enum Command {
+    #[structopt(name = "config")]
+    Config(Config),
+}
+#[derive(StructOpt, Debug)]
+pub struct Config {
+    #[structopt(short = "s", long, help = "Set configuration", parse(try_from_str = parse_key_val), number_of_values = 1)]
+    pub set: Option<[String; 2]>,
+    #[structopt(short = "g", long, help = "Get configuration")]
+    pub get: Option<String>,
+}
+
+fn parse_key_val<T>(s: &str) -> Result<[T; 2], Box<dyn Error>>
+where
+    T: std::str::FromStr,
+    T::Err: Error + 'static,
+{
+    let parts = s
+        .find('=')
+        .ok_or_else(|| format!("invalid KEY=value: no `=` found in `{}`", s))?;
+    Ok([s[..parts].parse()?, s[parts + 1..].parse()?])
 }
