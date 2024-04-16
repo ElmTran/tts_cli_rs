@@ -11,34 +11,38 @@ use utils::audio_util;
 
 #[tokio::main]
 async fn main() {
+    let mut config = config::Config::from_toml("conf.toml");
     let matches = Opt::from_args();
     if let Some(command) = matches.command {
         match command {
-            args::Command::Config(config) => {
-                if let Some(set) = config.set {
-                    let mut config_new = config::Config::new();
-                    config_new.set_config(&set);
-                } else if let Some(query) = config.get {
-                    let config_new = config::Config::new();
-                    config_new.get_config(query);
+            args::Command::Config(arg) => {
+                if let Some(conf) = arg.set {
+                    config.set_config(&conf);
+                } else if let Some(query) = arg.get {
+                    let val = config.get_config(&query);
+                    if let Some(v) = val {
+                        println!("{}: {}", query, v);
+                    } else {
+                        println!("invalid config key");
+                    }
                 }
             }
         }
     } else {
         let params = param::Params::new(
-            matches
-                .text
-                .unwrap_or("please provide text to speak".to_string()),
+            matches.text.unwrap_or("please provide text to speak".to_string()),
             matches.speaker,
             matches.language,
             matches.style,
             matches.rate,
-            matches.pitch,
+            matches.pitch
         );
-        let res = azure::speak(&params).await.unwrap();
+        let res = azure::speak(&params, &config).await.unwrap();
         if let Some(output) = matches.output {
             audio_util::save_audio(&res, &output).unwrap();
         }
-        audio_util::play_audio(&res).await.unwrap();
+        audio_util
+            ::play_audio(&res).await
+            .expect("failed to play audio, please check your settings or device");
     }
 }

@@ -2,3 +2,5 @@
 .env
 .vscode
 assets/audio
+config.toml
+conf.toml
