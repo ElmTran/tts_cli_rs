@@ -1,11 +1,11 @@
-use crate::config::Config;
 use super::param::Params;
+use crate::config::Config;
 use reqwest::Client;
 use std::error::Error;
 
 pub async fn speak(params: &Params, config: &Config) -> Result<Vec<u8>, Box<dyn Error>> {
-    let subscription = config.get_key().expect("AZURE_KEY must be set");
-    let endpoint = config.get_endpoint().expect("AZURE_ENDPOINT must be set");
+    let subscription = config.get_key()?;
+    let endpoint = config.get_endpoint()?;
     let client = Client::new();
     let xml = params.ssml();
     let res = client
@@ -17,5 +17,9 @@ pub async fn speak(params: &Params, config: &Config) -> Result<Vec<u8>, Box<dyn 
         .body(xml)
         .send().await?
         .bytes().await?;
-    Ok(res.to_vec())
+    if res.is_empty() {
+        Err("failed to generate audio, please check your settings or text".into())
+    } else {
+        Ok(res.to_vec())
+    }
 }

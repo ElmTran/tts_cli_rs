@@ -1,7 +1,7 @@
 use std::error::Error;
 use structopt::StructOpt;
 
-#[derive(StructOpt, Debug)]
+#[derive(StructOpt)]
 #[structopt(name = "tts_cli_rs")]
 pub struct Opt {
     #[structopt(short, long, help = "Text to speak")]
@@ -22,11 +22,11 @@ pub struct Opt {
     pub command: Option<Command>,
 }
 
-#[derive(StructOpt, Debug)]
+#[derive(StructOpt)]
 pub enum Command {
     #[structopt(name = "config")] Config(Config),
 }
-#[derive(StructOpt, Debug)]
+#[derive(StructOpt)]
 pub struct Config {
     #[structopt(
         short = "s",

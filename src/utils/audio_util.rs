@@ -5,20 +5,19 @@ use std::io::Write;
 use std::thread;
 use std::time::Duration;
 
-pub fn save_audio(audio: &[u8], path: &String) -> std::io::Result<()> {
+pub fn write(audio: &[u8], path: &String) -> std::io::Result<()> {
     if path.ends_with(".mp3") || path.ends_with(".wav") {
         let mut file = File::create(path)?;
         file.write_all(&audio)?;
-        return Ok(());
     } else {
         std::fs::create_dir_all(path)?;
         let mut file = File::create(format!("{}/{}.mp3", path, time_util::get_timestamp()))?;
         file.write_all(&audio)?;
-        Ok(())
     }
+    Ok(())
 }
 
-pub async fn play_audio(audio: &[u8]) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn play(audio: &[u8]) -> Result<(), Box<dyn std::error::Error>> {
     let sl = Soloud::default()?;
     let mut wav = audio::Wav::default();
     wav.load_mem(audio)?;

@@ -10,21 +10,33 @@ pub struct Config {
 impl Config {
     pub fn from_toml(path: &str) -> Self {
         if !std::path::Path::new("conf.toml").exists() {
-            let toml = toml::to_string(&(Config { key: None, endpoint: None })).unwrap();
+            let toml = toml
+                ::to_string(
+                    &(Config {
+                        key: None,
+                        endpoint: None,
+                    })
+                )
+                .unwrap();
             fs::write("conf.toml", toml).expect("Error writing file");
         }
         let toml = fs::read_to_string(path).expect("Error reading file");
         toml::from_str(&toml).unwrap()
     }
 
-    pub fn get_key(&self) -> Option<String> {
-        self.key.clone()
+    pub fn get_key(&self) -> Result<&String, &'static str> {
+        match &self.key {
+            Some(k) => Ok(k),
+            None => Err("key is not set"),
+        }
     }
 
-    pub fn get_endpoint(&self) -> Option<String> {
-        self.endpoint.clone()
+    pub fn get_endpoint(&self) -> Result<&String, &'static str> {
+        match &self.endpoint {
+            Some(e) => Ok(e),
+            None => Err("endpoint is not set"),
+        }
     }
-
     pub fn set_config(&mut self, kv: &[String; 2]) {
         let mut iter = kv.iter();
         while let Some(k) = iter.next() {
@@ -36,7 +48,7 @@ impl Config {
                     self.endpoint = Some(iter.next().unwrap().to_string());
                 }
                 _ => {
-                    println!("Invalid argument");
+                    println!("Invalid argument, please use key or endpoint");
                     break;
                 }
             }
@@ -58,11 +70,11 @@ impl Config {
         }
     }
 
-    pub fn get_config(&self, key: &String) -> Option<String> {
+    pub fn get_config(&self, key: &String) -> Result<&String, &'static str> {
         match key.as_str() {
             "key" => self.get_key(),
             "endpoint" => self.get_endpoint(),
-            _ => None,
+            _ => Err("Invalid argument, please use key or endpoint"),
         }
     }
 }

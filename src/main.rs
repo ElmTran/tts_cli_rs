@@ -23,13 +23,19 @@ async fn main() {
             matches.rate,
             matches.pitch
         );
-        let res = azure::speak(&params, &config).await.unwrap();
-        if let Some(output) = matches.output {
-            audio_util::save_audio(&res, &output).unwrap();
+        let res = azure::speak(&params, &config).await;
+        match res {
+            Ok(_) => {
+                let audio = res.unwrap();
+                if let Some(output) = matches.output {
+                    audio_util::write(&audio, &output).unwrap();
+                }
+                if let Err(_) = audio_util::play(&audio).await {
+                    println!("Playing audio failed, please check your device");
+                }
+            }
+            Err(e) => println!("{}", e),
         }
-        audio_util
-            ::play_audio(&res).await
-            .expect("failed to play audio, please check your settings or device");
     }
 }
 
@@ -40,10 +46,9 @@ fn handle_command(cmd: &args::Command, config: &mut config::Config) {
                 config.set_config(&conf);
             } else if let Some(query) = &arg.get {
                 let val = config.get_config(&query);
-                if let Some(v) = val {
-                    println!("{}: {}", query, v);
-                } else {
-                    println!("invalid config key");
+                match val {
+                    Ok(v) => println!("{}", v),
+                    Err(e) => println!("{}", e),
                 }
             }
         }
