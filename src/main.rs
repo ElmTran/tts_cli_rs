@@ -7,10 +7,11 @@ use structopt::StructOpt;
 use tts::azure;
 use tts::param;
 use utils::audio_util;
+use confy;
 
 #[tokio::main]
 async fn main() {
-    let mut config = config::Config::from_toml("conf.toml");
+    let mut config: config::Config = confy::load("tts_cli_rs", "conf").unwrap();
     let matches = args::Opt::from_args();
     if let Some(command) = matches.command {
         handle_command(&command, &mut config);
@@ -43,7 +44,9 @@ fn handle_command(cmd: &args::Command, config: &mut config::Config) {
     match cmd {
         args::Command::Config(arg) => {
             if let Some(conf) = &arg.set {
-                config.set_config(&conf);
+                if let Err(_) = config.set_config(&conf) {
+                    println!("Setting config failed, please check your input");
+                }
             } else if let Some(query) = &arg.get {
                 let val = config.get_config(&query);
                 match val {
