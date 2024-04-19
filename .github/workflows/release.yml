@@ -13,14 +13,53 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        target: [x86_64-pc-windows-gnu, x86_64-unknown-linux-musl]
     steps:
       - uses: actions/checkout@master
-      - name: Compile and release
+      - name: Build
+        run: cargo build --verbose
+      - name: Run tests
+        run: cargo test --verbose
+      - name: Compile Windows
+        id: compile
         uses: rust-build/rust-build.action@v1.4.5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          RUSTTARGET: ${{ matrix.target }}
+          RUSTTARGET: x86_64-pc-windows-gnu
           EXTRA_FILES: 'README.md LICENSE.txt'
+          UPLOAD_MODE: none
+      - name: Upload Windows
+        uses: actions/upload-artifact@v3
+        with:
+          name: Binary
+          path: |
+            ${{ steps.compile.outputs.BUILT_ARCHIVE }}
+            ${{ steps.compile.outputs.BUILT_CHECKSUM }}
+      - name: Compile Linux
+        id: compile_linux
+        uses: rust-build/rust-build.action@v1.4.5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          RUSTTARGET: x86_64-unknown-linux-musl
+          EXTRA_FILES: 'README.md LICENSE.txt'
+          UPLOAD_MODE: none
+      - name: Upload Linux
+        uses: actions/upload-artifact@v3
+        with:
+          name: Binary
+          path: |
+            ${{ steps.compile_linux.outputs.BUILT_ARCHIVE }}
+            ${{ steps.compile_linux.outputs.BUILT_CHECKSUM }}
+      - name: Release
+        uses: 'marvinpinto/action-automatic-releases@latest'
+        with:
+          repo_token: '${{ secrets.GITHUB_TOKEN }}'
+          automatic_release_tag: 'latest'
+          prerelease: true
+          title: 'Release ${{ github.ref }}'
+          files: |
+            ${{ steps.compile.outputs.BUILT_ARCHIVE }}
+            ${{ steps.compile.outputs.BUILT_CHECKSUM }}
+            ${{ steps.compile_linux.outputs.BUILT_ARCHIVE }}
+            ${{ steps.compile_linux.outputs.BUILT_CHECKSUM }}
