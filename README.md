@@ -145,6 +145,6 @@ Project Link: [https://github.com/ElmTran/tts_cli_rs](https://github.com/ElmTran
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[license-shield]: https://img.shields.io/github/license/ElmTran/tts_cli_rs.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/ElmTran/tts_cli_rs
 [license-url]: https://github.com/ElmTran/tts_cli_rs/blob/master/LICENSE.txt
 [product-screenshot]: images/screenshot.png
