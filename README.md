@@ -1,4 +1,3 @@
-<!-- PROJECT LOGO -->
 <br />
 <div align="center">
   <a href="https://github.com/ElmTran/tts_cli_rs">
@@ -19,7 +18,6 @@
   </p>
 </div>
 
-<!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
   <ol>
@@ -41,51 +39,77 @@
   </ol>
 </details>
 
-<!-- ABOUT THE PROJECT -->
-
 ## About The Project
 
 [![TTS-CLI_RS][product-screenshot]](images/screenshot.png)
-
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `ElmTran`, `tts_cli_rs`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Getting Started
 
 ### Prerequisites
 
-1. Get an API Key and Endpoint from Azure Cognitive Services
+1. Get an API Key and Endpoint from Azure Cognitive Services. You can get a resource from [here](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/get-started-text-to-speech?tabs=windows%2Cterminal&pivots=programming-language-csharp#prerequisites)
 
 ### Installation
 
-- Download the latest release from the [releases page]()
+- Download the latest release from the [releases page](https://github.com/ElmTran/tts_cli_rs/releases/)
 
 - Build the project from source
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+  ```sh
+  git clone https://github.com/ElmTran/tts_cli_rs.git
+
+  cd tts_cli_rs
+
+  cargo build --release
+  ```
+
+- Or you can fork this repo and build it by Github Actions, then download the artifact from the Release page.
 
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+- Basic usage
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+  ```sh
+  # Show help
+  tts_cli_rs --help
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+  # Set the API Key
+  tts_cli_rs config --set key=<API_KEY>
 
-<!-- ROADMAP -->
+  # Set the Endpoint
+  tts_cli_rs config --set endpoint=<ENDPOINT>
+
+  # Convert text to speech
+  tts_cli_rs --text "Hello, World!"
+
+  # optional arguments:
+  #   -l, --language <language>    The language of the input text. Default is "en-US".
+  #   -p, --pitch <pitch>          The voice pitch. Default is 0.
+  #   -r, --rate <rate>            The voice rate. Default is 1.
+  #   -s, --speaker <speaker>      The speaker name. Default is "en-US-AriaNeural".
+  #   -y, --style <style>          The speaking style. Default is "chat".
+  #   file/dir                     The file or directory to convert.
+  ```
+
+  More languages, speakers, and styles can be found [here](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support?tabs=stt#supported-languages)
+
+- The TTS-CLI-RS can corporate with other tools, like AHK (AutoHotKey) to convert the selected text to speech.
+
+  ```ahk
+  ; Convert the selected text to speech
+  ^+s::
+  Send, ^c
+  Run, tts_cli_rs.exe --text "%clipboard%"
+  return
+  ```
 
 ## Roadmap
 
 - [ ] Create a GUI version
 
-- [ ] Add more services
+- [ ] Add more services, like Parler (local TTS service)
 
 See the [open issues](https://github.com/ElmTran/tts_cli_rs/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- CONTRIBUTING -->
 
 ## Contributing
 
@@ -100,17 +124,11 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- LICENSE -->
-
 ## License
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- CONTACT -->
+[![License][license-shield]][license-url]
 
 ## Contact
 
@@ -118,17 +136,11 @@ Mengqing - [@Telegram](https://t.me/mzfbwu/) - [@Email](mailto:c897611977@gmail.
 
 Project Link: [https://github.com/ElmTran/tts_cli_rs](https://github.com/ElmTran/tts_cli_rs)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- ACKNOWLEDGMENTS -->
-
 ## Acknowledgments
 
-- []()
-- []()
-- []()
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+- [azure-cognitiveservices-speech](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/get-started-text-to-speech?tabs=windows%2Cterminal&pivots=programming-language-rest#synthesize-to-a-file)
+- [reqwest](https://docs.rs/reqwest/latest/reqwest/)
+- [soloud](https://solhsa.com/soloud/index.html)
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
